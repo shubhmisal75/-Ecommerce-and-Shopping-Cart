@@ -33,10 +33,34 @@ const uploadFile = async (file) => {
         });
     });
 };
-//..................................................................
+//..................................................................//
+
 const register = async function (req, res) {
     try {
+
+
         let files = req.files
+        let reqbody = req.body
+
+     //   const {fname, lname,  email, phone, password, address, profileImage  } =reqbody
+        // if(!validator.isValidRequestBody(reqbody)){
+        //     res.status(400).send({status:false,msg:"plz provide body"})
+        // }
+        // if(validator.isValid(fname)){
+        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
+        // }
+        // if(validator.isValid(email)){
+        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
+        // } if(validator.isValid(phone)){
+        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
+        // } if(validator.isValid(password)){
+        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
+        // } if(validator.isValid(address)){
+        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
+        // }
+        // if(validator.isValid(address)){
+        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
+        // }//         let files = req.files
 
         let requestBody = req.body
 
@@ -148,7 +172,7 @@ const register = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid request parameter, please provide profile image" })
         }
 
-        //------------Validation Ends----------
+        //------------Validation Ends----------//
 
         profileImage = await uploadFile(files[0]);
 
@@ -176,6 +200,7 @@ const login = async (req, res) => {
         // Extract params
 
         const { email, password } = requestBody;
+        console.log(password)
 
         // Validation starts
 
@@ -197,9 +222,9 @@ const login = async (req, res) => {
             return;
         }
 
-        if (!(password.length >= 8 && password.length <= 15)) {
-            return res.status(400).send({ status: false, message: "Password should be Valid min 8 and max 15 " })
-        }
+        // if (!(password.length >= 8 && password.length <= 15)) {
+        //     return res.status(400).send({ status: false, message: " Password should be Valid min 8 and max 15 " })
+        // }
         // Validation ends
         const user = await userModel.findOne({ email });
         if (!user) {
@@ -207,9 +232,10 @@ const login = async (req, res) => {
         }
 
         let hashedPassword = user.password
+console.log(hashedPassword,"235")
 
         const encryptedPassword = await bcrypt.compare(password, hashedPassword)
-
+console.log(encryptedPassword,"238")
         if (!encryptedPassword) return res.status(401).send({ status: false, message: `Invalid login credentials` });
 
         const token = jwt.sign({
