@@ -110,7 +110,9 @@ const updateCart = async (req, res) => {
 
         let user = await userModel.findOne({ _id: userId });
 
-        if (!user) { return res.status(400).send({ status: false, message: "UserId does not exits" }) }
+        if (!user) {
+             return res.status(400).send({ status: false, message: "UserId does not exits" }) 
+            }
 
         //! Authorization
 
@@ -186,9 +188,7 @@ const updateCart = async (req, res) => {
                     await cartModel.findOneAndUpdate({ _id: cartId }, { $pull: { items: { productId: productId } } }, { new: true });
 
                     let quantity = cart.totalItems - 1;
-                    let data = await cartModel.findOneAndUpdate({ _id: cartId }, { $set: { totalPrice: totalAmount, totalItems: quantity } }, { new: true }); //*update the cart with total items and totalprice
-
-                    //let data = await cartModel.findOneAndUpdate({ _id: cartId }, { $inc: { totalItems: -1 } }, { new: true })
+                    let data = await cartModel.findOneAndUpdate({ _id: cartId }, { $set: { totalPrice: totalAmount, totalItems: quantity } }, { new: true }); 
                     return res.status(400).send({ status: false, message: "no such Quantity/Product present in this cart", data: data });
                 }
             }
@@ -231,7 +231,7 @@ const getCart = async (req, res) => {
     }
 };
 
-//!...............................................................
+//...............................................................
 
 const deleteCart = async  (req, res) => {
     try {
@@ -240,7 +240,6 @@ const deleteCart = async  (req, res) => {
             return res.status(400).send({ status: false, message: "Invalid userId in params " });
         }
         const findUser = await userModel.findById({ _id: userId });
-        //console.log(findUser)
         if (!findUser) {
             return res.status(400).send({ status: false, message: "User does not exits by ${userId}" });
         }
@@ -264,20 +263,6 @@ const deleteCart = async  (req, res) => {
         return res.status(500).send({ status: false, message: "Error is :" + err });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

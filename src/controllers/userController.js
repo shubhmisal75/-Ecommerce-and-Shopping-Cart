@@ -20,7 +20,7 @@ const uploadFile = async (file) => {
 
         const uploadParams = {
             ACL: "public-read",
-            Bucket: "classroom-training-bucket", //A bucket is a container for objects to store an object in Amazon S3.
+            Bucket: "classroom-training-bucket", 
             Key: "Hercules/User/" + new Date() + file.originalname,
             Body: file.buffer,
         }
@@ -38,36 +38,14 @@ const uploadFile = async (file) => {
 const register = async function (req, res) {
     try {
 
-
-        let files = req.files
-        let reqbody = req.body
-
-     //   const {fname, lname,  email, phone, password, address, profileImage  } =reqbody
-        // if(!validator.isValidRequestBody(reqbody)){
-        //     res.status(400).send({status:false,msg:"plz provide body"})
-        // }
-        // if(validator.isValid(fname)){
-        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
-        // }
-        // if(validator.isValid(email)){
-        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
-        // } if(validator.isValid(phone)){
-        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
-        // } if(validator.isValid(password)){
-        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
-        // } if(validator.isValid(address)){
-        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
-        // }
-        // if(validator.isValid(address)){
-        //     res.status(400).send({status:false,msg:"provide fname or valid fname"})
-        // }//         let files = req.files
-
         let requestBody = req.body
+        let files = req.files
+       
 
         if (!validator.isValidRequestBody(requestBody)) {
             return res.status(400).send({ status: false, message: "Invalid request parameter, please provide user Detaills" })
         }
-        //Extract body
+      
         let { fname, lname,  email, phone, password, address, profileImage } = requestBody
 
         //-------Validation Starts-----------
@@ -82,9 +60,7 @@ const register = async function (req, res) {
         if (!validator.isValid(email)) {
             return res.status(400).send({ status: false, message: "Invalid request parameter, please provide email" });
         }
-
-        //validating email using RegEx.
-        email = email.trim()
+      
         if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)) {
             return res.status(400).send({ status: false, message: `Email should be a valid email address` });
         }
@@ -93,11 +69,10 @@ const register = async function (req, res) {
         if (isEmailAlredyPresent) {
             return res.status(400).send({ status: false, message: `Email Already Present` });
         }
-        phone = phone.trim()
+       
         if (!validator.isValid(phone)) {
             return res.status(400).send({ status: false, message: "Invalid request parameter, please provide Phone" });
         }
-        //validating phone number of 10 digits only.
         if (!/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/.test(phone)) {
             return res.status(400).send({ status: false, message: `Mobile should be a valid number` });
         }
@@ -115,8 +90,6 @@ const register = async function (req, res) {
         if (!validator.isValid(address)) {
             return res.status(400).send({ status: false, message: "Address is required" });
         }
-
-        // Shipping Adress validation
         if (address.shipping) {
             if (address.shipping.street) {
                 if (!validator.isValidRequestBody(address.shipping.street)) {
@@ -141,7 +114,6 @@ const register = async function (req, res) {
             }
         } else { return res.status(400).send({ status: false, message: "Invalid request parameters, Shipping address cannot be empty" }) }
 
-        // Billing Adress validation
 
         if (address.billing) {
             if (address.billing.street) {
@@ -197,12 +169,7 @@ const login = async (req, res) => {
     try {
         const requestBody = req.body;
 
-        // Extract params
-
         const { email, password } = requestBody;
-        console.log(password)
-
-        // Validation starts
 
         if (!validator.isValidRequestBody(requestBody)) {
             return res.status(400).send({ status: false, msg: "Please enter login credentials" });
@@ -212,30 +179,26 @@ const login = async (req, res) => {
             res.status(400).send({ status: false, msg: "Enter an email" });
             return;
         }
-        //email = email.trim()
         if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)) {
             return res.status(400).send({ status: false, message: `Email should be a valid email address` });
         }
-
-        if (!validator.isValid(password)) {
+       if (!validator.isValid(password)) {
             res.status(400).send({ status: false, msg: "enter a password" });
             return;
         }
-
-        // if (!(password.length >= 8 && password.length <= 15)) {
-        //     return res.status(400).send({ status: false, message: " Password should be Valid min 8 and max 15 " })
-        // }
-        // Validation ends
+       if (!(password.length >= 8 && password.length <= 15)) {
+            return res.status(400).send({ status: false, message: " Password should be Valid min 8 and max 15 " })
+        }
+      
         const user = await userModel.findOne({ email });
         if (!user) {
             return res.status(401).send({ status: false, message: `Invalid login credentials` });
         }
 
         let hashedPassword = user.password
-console.log(hashedPassword,"235")
+
 
         const encryptedPassword = await bcrypt.compare(password, hashedPassword)
-console.log(encryptedPassword,"238")
         if (!encryptedPassword) return res.status(401).send({ status: false, message: `Invalid login credentials` });
 
         const token = jwt.sign({

@@ -11,7 +11,6 @@ const orderCreation = async (req, res) => {
         if (!validator.isValidRequestBody(requestBody)) {
             return res.status(400).send({ status: false, message: "Invalid request body. Please provide the the input to proceed." });
         }
-        //Extract parameters
         const { cartId, cancellable, status } = requestBody;
 
         if (!validator.isValidObjectId(userId)) {
@@ -51,7 +50,7 @@ const orderCreation = async (req, res) => {
         if (!searchCartDetails.items.length) {
             return res.status(202).send({ status: false, message: `Order already placed for this cart. Please add some products in cart to make an order.` });
         }
-        //adding quantity of every products
+      
         const reducer = (previousValue, currentValue) => previousValue + currentValue;
         let totalQuantity = searchCartDetails.items.map((x) => x.quantity).reduce(reducer);
 
@@ -66,7 +65,7 @@ const orderCreation = async (req, res) => {
         };
         const savedOrder = await orderModel.create(orderDetails);
 
-        //Empty the cart after the successfull order
+      
         await cartModel.findOneAndUpdate({ _id: cartId, userId: userId }, {
             $set: {
                 items: [],
@@ -96,7 +95,6 @@ const updateOrder = async (req, res) => {
                     message: "Invalid request body. Please provide the the input to proceed.",
                 });
         }
-        //extract params
         const { orderId, status } = requestBody;
 
         if (!validator.isValidObjectId(userId)) {
